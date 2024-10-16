@@ -9,6 +9,28 @@
 #include <emscripten.h>
 #include <iostream>
 
+constexpr const char* SHADER_SOURCE = R"(
+	struct VertexOutput {
+    	@builtin(position) position: vec4f,
+    	@location(0) color: vec3f,
+	};
+
+	@vertex
+	fn vs_main(@builtin(vertex_index) i : u32) -> VertexOutput {
+    	const pos = array(vec2f(0, 0.5), vec2f(-0.5, -0.5), vec2f(0.5, -0.5));
+		const color = array(vec3f(1, 0, 0), vec3(0, 1, 0), vec3f(0, 0, 1));
+
+		var out: VertexOutput;
+		out.position = vec4f(pos[i], 0.0, 1.0);
+		out.color = color[i];
+		return out;
+	}
+
+	@fragment fn fragmentMain(in: VertexOutput) -> @location(0) vec4f {
+		return vec4f(in.color, 1.0);
+	}
+)";
+
 wgpu::Adapter GetAdapter(wgpu::Instance instance, wgpu::RequestAdapterOptions const * options) {
 	struct UserData {
 		WGPUAdapter adapter = nullptr;
@@ -102,6 +124,26 @@ RenderContext::RenderContext(std::shared_ptr<Window> window)
 	surface.alphaMode = wgpu::CompositeAlphaMode::Auto;
 
 	mSurface.Configure(&surface);
+
+	// Pipeline
+	wgpu::ShaderModuleWGSLDescriptor wgslDesc{};
+  	wgslDesc.code = SHADER_SOURCE;
+
+  	wgpu::ShaderModuleDescriptor shaderModuleDescriptor{
+  	    .nextInChain = &wgslDesc};
+  	wgpu::ShaderModule shaderModule =
+  	    mDevice.CreateShaderModule(&shaderModuleDescriptor);
+
+  	wgpu::ColorTargetState colorTargetState{.format = surface.format};
+
+  	wgpu::FragmentState fragmentState{.module = shaderModule,
+  	                                  .targetCount = 1,
+  	                                  .targets = &colorTargetState};
+
+  	wgpu::RenderPipelineDescriptor descriptor{
+  	    .vertex = {.module = shaderModule},
+  	    .fragment = &fragmentState};
+  	mPipeline = mDevice.CreateRenderPipeline(&descriptor);
 }
 
 RenderContext::~RenderContext()
@@ -125,6 +167,8 @@ void RenderContext::TestUpdate()
 
   	wgpu::CommandEncoder encoder = mDevice.CreateCommandEncoder();
   	wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderpass);
+	pass.SetPipeline(mPipeline);
+	pass.Draw(3);
   	pass.End();
   	wgpu::CommandBuffer commands = encoder.Finish();
   	mQueue.Submit(1, &commands);

@@ -23,4 +23,6 @@ private:
     wgpu::Adapter mAdapter = nullptr;
     wgpu::Device mDevice = nullptr;
     wgpu::Queue mQueue = nullptr;
+
+    wgpu::RenderPipeline mPipeline = nullptr;
 };
