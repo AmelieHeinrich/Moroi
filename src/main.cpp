@@ -8,6 +8,8 @@
 #endif
 
 #include "app.cpp"
+#include "window.cpp"
+#include "render_context.cpp"
 
 int main()
 {

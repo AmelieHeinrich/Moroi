@@ -6,9 +6,10 @@
 
 #pragma once
 
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-#include <GLES3/gl3.h>
+#include <memory>
+
+#include "window.hpp"
+#include "render_context.hpp"
 
 class App
 {
@@ -18,5 +19,6 @@ public:
 
     void OnFrame();
 private:
-    GLFWwindow* mWindow;
+    std::shared_ptr<Window> mWindow;
+    std::shared_ptr<RenderContext> mRenderContext;
 };

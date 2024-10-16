@@ -11,7 +11,7 @@ if not exist run_tree (
 
 set rootDir=%cd%
 set source=%rootDir%/src/main.cpp
-set flags=--use-port=contrib.glfw3
+set flags=-sUSE_GLFW=3 -sUSE_WEBGPU=1 -sASYNCIFY
 set output=Moroi.html
 
 pushd run_tree

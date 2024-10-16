@@ -8,19 +8,16 @@
 
 App::App()
 {
-    if (!glfwInit()) {
-        // TODO
-    }
-    mWindow = glfwCreateWindow(1280, 720, "Emscripten Window", nullptr, nullptr);
+    mWindow = std::make_shared<Window>(1280, 720);
+    mRenderContext = std::make_shared<RenderContext>(mWindow);
 }
 
 App::~App()
 {
-    glfwDestroyWindow(mWindow);
-    glfwTerminate();
+
 }
 
 void App::OnFrame()
 {
-    glfwPollEvents();
+    mWindow->Update();
 }
