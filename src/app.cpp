@@ -20,4 +20,5 @@ App::~App()
 void App::OnFrame()
 {
     mWindow->Update();
+    mRenderContext->TestUpdate();
 }

@@ -16,9 +16,11 @@ public:
     RenderContext(std::shared_ptr<Window> window);
     ~RenderContext();
 
+    void TestUpdate();
 private:
     wgpu::Instance mInstance = nullptr;
     wgpu::Surface mSurface = nullptr;
     wgpu::Adapter mAdapter = nullptr;
     wgpu::Device mDevice = nullptr;
+    wgpu::Queue mQueue = nullptr;
 };
